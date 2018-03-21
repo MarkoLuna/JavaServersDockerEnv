@@ -1,0 +1,61 @@
+version: '2'
+services:
+  mysql:
+    container_name: mysql_server
+    networks:
+      - dockernet
+    restart: always
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 'test_pass'
+      MYSQL_USER: 'admin_test'
+      MYSQL_PASS: 'admin_test'
+    ports:
+      - "3306:3306"
+    volumes:
+      - /env_data/mysql/data:/var/lib/mysql
+  gitblit:
+    container_name: gitblit_server
+    networks:
+      - dockernet
+    restart: always
+    image: gitblit
+    ports:
+      - "8081:8080"
+    volumes:
+      - /env_data/gitblit/data:/projects/gitblit/data/
+  jenkins:
+    container_name: jenkins_server
+    networks:
+      - dockernet
+    restart: always
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - /env_data/jenkins/data:/var/jenkins_home/
+  sonar:
+    container_name: sonar_server
+    networks:
+      - dockernet
+    restart: always
+    image: sonarqube
+    links: 
+      - mysql
+    ports:
+      - "9000:9000"
+      - "9092:9092"
+    environment:
+      SONARQUBE_JDBC_USERNAME: 'root'
+      SONARQUBE_JDBC_PASSWORD: 'test_pass' 
+      SONARQUBE_JDBC_URL: 'jdbc:mysql://mysql:3306/sonar?useUnicode=true&characterEncoding=utf8'
+    volumes:
+      - /env_data/sonarqube/conf:/opt/sonarqube/conf
+      - /env_data/sonarqube/data:/opt/sonarqube/data
+      - /env_data/sonarqube/extensions:/opt/sonarqube/extensions
+      - /env_data/sonarqube/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+
+networks:
+    dockernet:
+        external: true
+
