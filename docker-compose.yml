@@ -47,7 +47,3 @@ services:
       - /env_data/sonarqube/extensions:/opt/sonarqube/extensions
       - /env_data/sonarqube/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
 
-networks:
-    dockernet:
-        external: true
-
